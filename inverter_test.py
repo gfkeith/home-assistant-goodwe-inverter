@@ -2,6 +2,8 @@
 
 import asyncio
 import goodwe
+from goodwe.const import GOODWE_UDP_PORT, GOODWE_TCP_PORT
+from goodwe.exceptions import InverterError
 import logging
 import sys
 
@@ -9,21 +11,30 @@ import sys
 logging.basicConfig(
     format="%(asctime)-15s %(funcName)s(%(lineno)d) - %(levelname)s: %(message)s",
     stream=sys.stderr,
-    level=getattr(logging, "ERROR", None),
+    level=getattr(logging, "DEBUG", None),
 )
 
 # Set the appropriate IP address
-IP_ADDRESS = "192.168.2.14"
-PORT = 8899
+IP_ADDRESS = ""
 
-FAMILY = "ET"  # One of ET, ES, DT or None to detect inverter family automatically
+FAMILY = None  # One of ET, ES, DT or None to detect inverter family automatically
 COMM_ADDR = None  # Usually 0xf7 for ET/ES or 0x7f for DT, or None for default value
-TIMEOUT = 1
-RETRIES = 3
+TIMEOUT = 2
+RETRIES = 10
 
-inverter = asyncio.run(
-    goodwe.connect(host=IP_ADDRESS, family=FAMILY, timeout=TIMEOUT, retries=RETRIES)
-)
+
+async def connect_inverter():
+    """Try UDP first (port 8899), fall back to TCP (port 502) like the HA integration does."""
+    port = GOODWE_UDP_PORT
+    try:
+        return await goodwe.connect(host=IP_ADDRESS, port=port, family=FAMILY, timeout=TIMEOUT, retries=RETRIES)
+    except InverterError as udp_err:
+        print(f"UDP port {port} failed ({udp_err}), trying TCP port {GOODWE_TCP_PORT}...", file=sys.stderr)
+        port = GOODWE_TCP_PORT
+        return await goodwe.connect(host=IP_ADDRESS, port=port, family=FAMILY, timeout=TIMEOUT, retries=RETRIES)
+
+
+inverter = asyncio.run(connect_inverter())
 print(
     f"Identified inverter:\n"
     f"\tModel:    {inverter.model_name}\n"
