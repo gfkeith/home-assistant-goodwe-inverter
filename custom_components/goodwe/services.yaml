@@ -26,8 +26,12 @@ get_parameter:
             - input_number
             - input_text
 set_parameter:
-  name: Set inverter configuration parameter - EXPERIMENTAL
-  description: BEWARE !!! Improper use may cause damage !
+  name: Set inverter configuration parameter
+  description: >
+    Write an operational parameter to the inverter. Only a fixed allowlist of
+    safe scheduling and energy-management parameters is accepted; hardware-level
+    settings (voltage limits, communication address, grid-safety parameters, etc.)
+    are not writable through this service.
   fields:
     device_id:
       name: Inverter device
@@ -38,11 +42,61 @@ set_parameter:
           integration: goodwe
     parameter:
       name: Parameter
-      description: Name of the inverter parameter
+      description: >
+        Name of the inverter parameter to write. Allowed values:
+        grid_export, grid_export_limit, meter_target_power_offset, work_mode,
+        ems_mode, ems_power_limit,
+        eco_mode_1, eco_mode_1_switch, eco_mode_2, eco_mode_2_switch,
+        eco_mode_3, eco_mode_3_switch, eco_mode_4, eco_mode_4_switch, eco_mode_enable,
+        peak_shaving_mode, peak_shaving_power_limit, peak_shaving_soc,
+        battery_discharge_depth, battery_discharge_depth_offline,
+        battery_soc_protection, soc_upper_limit,
+        fast_charging, fast_charging_soc, fast_charging_power,
+        backup_supply, backup_mode_enable,
+        load_control_switch, load_control_soc, load_control_mode,
+        shadow_scan, dod_holding, smart_charging_enable, max_charge_power,
+        off-grid_charge, bp_off_grid_charge, bp_pv_discharge
       required: true
       selector:
-        text:
-      example: 'battery_charge_current'
+        select:
+          options:
+            - 'grid_export'
+            - 'grid_export_limit'
+            - 'meter_target_power_offset'
+            - 'work_mode'
+            - 'ems_mode'
+            - 'ems_power_limit'
+            - 'eco_mode_1'
+            - 'eco_mode_1_switch'
+            - 'eco_mode_2'
+            - 'eco_mode_2_switch'
+            - 'eco_mode_3'
+            - 'eco_mode_3_switch'
+            - 'eco_mode_4'
+            - 'eco_mode_4_switch'
+            - 'eco_mode_enable'
+            - 'peak_shaving_mode'
+            - 'peak_shaving_power_limit'
+            - 'peak_shaving_soc'
+            - 'battery_discharge_depth'
+            - 'battery_discharge_depth_offline'
+            - 'battery_soc_protection'
+            - 'soc_upper_limit'
+            - 'fast_charging'
+            - 'fast_charging_soc'
+            - 'fast_charging_power'
+            - 'backup_supply'
+            - 'backup_mode_enable'
+            - 'load_control_switch'
+            - 'load_control_soc'
+            - 'load_control_mode'
+            - 'shadow_scan'
+            - 'dod_holding'
+            - 'smart_charging_enable'
+            - 'max_charge_power'
+            - 'off-grid_charge'
+            - 'bp_off_grid_charge'
+            - 'bp_pv_discharge'
     value:
       name: Value
       description: Value of the parameter to set
