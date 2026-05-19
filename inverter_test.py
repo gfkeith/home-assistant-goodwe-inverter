@@ -5,6 +5,7 @@ import goodwe
 from goodwe.const import GOODWE_UDP_PORT, GOODWE_TCP_PORT
 from goodwe.exceptions import InverterError
 import logging
+import os
 import sys
 
 
@@ -15,7 +16,7 @@ logging.basicConfig(
 )
 
 # Set the appropriate IP address
-IP_ADDRESS = ""
+IP_ADDRESS = os.environ.get("GOODWE_INVERTER_HOST")
 
 FAMILY = None  # One of ET, ES, DT or None to detect inverter family automatically
 COMM_ADDR = None  # Usually 0xf7 for ET/ES or 0x7f for DT, or None for default value
